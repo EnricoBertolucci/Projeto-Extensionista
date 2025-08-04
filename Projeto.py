@@ -1,48 +1,52 @@
+from datetime import datetime
+
 # Mensagem de boas-vindas
 print("Bem-vindo ao Sistema de Cadastro de Contribuintes!")
 
-#Lista que armazenará os contribuintes cadastrados
+# Lista que armazenará os contribuintes cadastrados
 lista_contribuintes = []
 
-#Variável global para gerar IDs únicos para os contribuintes
-#Começa em 0 e será incrementada para cada novo contribuinte
+# Variável global para gerar IDs únicos para os contribuintes
 id_global = 0
-
 def cadastrar_contribuinte():
-#Função para cadastrar um novo contribuinte.
-#Gera um ID único para o contribuinte automaticamente.
-    global id_global #Declara que estamos usando a variável global id_global
-    id_global += 1   
+    global id_global
+    id_global += 1
 
-    #Pergunta os detalhes do contribuinte ao usuário
     nome = input("Digite o nome do contribuinte: ")
-    primeira_contribuicao = input("Digite a data em que o contribuinte fez sua primeira contribuição: ")
-    valor = input(int("Digite o valor contribuído mensalmente: "))
 
-    #Cria um dicionário com os dados do contribuinte
+    # Validação da data de contribuição
+    while True:
+        data_input = input("Digite a data da primeira contribuição (formato DD/MM/AAAA): ")
+        try:
+            primeira_contribuicao = datetime.strptime(data_input, "%d/%m/%Y")
+            break
+        except ValueError:
+            print("Data inválida. Use o formato DD/MM/AAAA.")
+
+    valor = float(input("Digite o valor contribuído mensalmente (em Reais): "))
+    bairro = input("Digite o bairro do contribuinte: ")
+
     contribuinte = {
         'id': id_global,
         'nome': nome,
-        'primeira contribuição': primeira_contribuicao,
-        'valor': valor
+        'primeira_contribuicao': primeira_contribuicao.strftime("%d/%m/%Y"),  # armazenado como string
+        'valor': valor,
+        'bairro': bairro,
     }
-    #Adiciona o dicionário à lista de contribuintes
+
     lista_contribuintes.append(contribuinte)
     print(f"Contribuinte '{nome}' (ID: {id_global}) cadastrado com sucesso!\n")
 
 def consultar_contribuinte():
-    #Função para consultar contribuinte.
-    #Permite consultar todos, por ID ou por nome.
     while True:
         print("\n--- Menu de Consulta ---")
         print("1. Consultar Todos")
         print("2. Consultar por ID")
-        print("3. Consultar por nome")
+        print("3. Consultar por Nome")
         print("4. Retornar ao menu principal")
         opcao_consulta = input("Escolha uma opção: ")
 
         if opcao_consulta == '1':
-            #Consultar todos os ccontribuintes
             if not lista_contribuintes:
                 print("Nenhum contribuinte cadastrado para exibir.")
             else:
@@ -51,67 +55,63 @@ def consultar_contribuinte():
                     print(f"ID: {contribuinte['id']}")
                     print(f"Nome: {contribuinte['nome']}")
                     print(f"Bairro: {contribuinte['bairro']}")
-                    print(f"Porte: {contribuinte['porte']}\n")
+                    print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                    print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
+
         elif opcao_consulta == '2':
-            #Consultar por ID
             try:
-                id_consulta = int(input("Digite o ID do contribuinte que deseja consultar: "))
+                id_consulta = int(input("Digite o ID do contribuinte: "))
                 encontrado = False
                 for contribuinte in lista_contribuintes:
                     if contribuinte['id'] == id_consulta:
-                        print(f"\n--- Detalhes do contribuinte (ID: {contribuinte['id']}) ---")
+                        print(f"\n--- Detalhes do Contribuinte (ID: {contribuinte['id']}) ---")
                         print(f"Nome: {contribuinte['nome']}")
-                        print(f"contribuinte: {contribuinte['contribuinte']}")
-                        print(f"Valor: {contribuinte['Reais']}\n")
+                        print(f"Bairro: {contribuinte['bairro']}")
+                        print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                        print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
                         encontrado = True
-                        break # Sai do loop assim que encontra o contribuinte
+                        break
                 if not encontrado:
-                    print(f"contribuinte com ID '{id_consulta}' não encontrado.")
+                    print(f"Nenhum contribuinte com ID '{id_consulta}' foi encontrado.")
             except ValueError:
-                print("Entrada inválida. Por favor, digite um número para o ID.")
+                print("Entrada inválida. Digite um número para o ID.")
+
         elif opcao_consulta == '3':
-            #Consultar por contribuinte
-            contribuinte_consulta = input("Digite o nome do contribuinte que deseja consultar: ")
-            #Filtra nome cujo contribuinte corresponde
-            encontrados = [contribuinte for contribuinte in lista_contribuintes if contribuinte['contribuinte'].lower() == contribuinte.lower()]
+            nome_busca = input("Digite o nome do contribuinte: ").lower()
+            encontrados = [c for c in lista_contribuintes if c['nome'].lower() == nome_busca]
             if encontrados:
-                print(f"\n--- Dados do contribuinte: {contribuinte_consulta} ---")
-                for ccontribuinte in encontrados:
+                print(f"\n--- Contribuintes Encontrados com o nome '{nome_busca}' ---")
+                for contribuinte in encontrados:
                     print(f"ID: {contribuinte['id']}")
                     print(f"Nome: {contribuinte['nome']}")
-                    print(f"Bairro: {contribuinte['editora']}\n")
+                    print(f"Bairro: {contribuinte['bairro']}")
+                    print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                    print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
             else:
-                print(f"Nenhum contribuinte encontrado. '{contribuinte_consulta}'.")
+                print(f"Nenhum contribuinte com o nome '{nome_busca}' foi encontrado.")
+
         elif opcao_consulta == '4':
-            #Retornar ao menu principal
             break
         else:
-            print("Opção inválida. Por favor, escolha uma opção de 1 a 4.")
+            print("Opção inválida. Escolha entre 1 e 4.")
 
 def remover_contribuinte():
-#Função para remover um contribuinte da lista pelo seu ID.
     if not lista_contribuintes:
         print("Não há contribuintes cadastrados para remover.")
         return
 
     try:
         id_remover = int(input("Digite o ID do contribuinte que deseja remover: "))
-        removido = False
-        #Itera sobre a lista usando enumerate para ter acesso ao índice
-        for i, contribuintes in enumerate(lista_contribuintes):
-            if contribuintes['id'] == id_remover:
-                nome_contribuintes_removido = lista_contribuintes.pop(i)['nome'] # Remove o contribuinte e pega o nome
-                print(f"contribuinte '{nome_contribuintes_removido}' (ID: {id_remover}) removido com sucesso!")
-                removido = True
-                break
-        if not removido:
-            print(f"contribuinte com ID '{id_remover}' não encontrado.")
+        for i, contribuinte in enumerate(lista_contribuintes):
+            if contribuinte['id'] == id_remover:
+                nome_removido = lista_contribuintes.pop(i)['nome']
+                print(f"Contribuinte '{nome_removido}' (ID: {id_remover}) removido com sucesso!")
+                return
+        print(f"Contribuinte com ID '{id_remover}' não encontrado.")
     except ValueError:
-        print("Entrada inválida. Por favor, digite um número para o ID.")
+        print("Entrada inválida. Digite um número para o ID.")
 
-#Menu Principal da Aplicação
 def main():
-#Função principal que gerencia o menu de interação com o usuário.
     while True:
         print("\n--- Menu Principal do Sistema de Cadastro de Contribuintes ---")
         print("1. Cadastrar contribuinte")
@@ -127,9 +127,10 @@ def main():
         elif opcao_menu == '3':
             remover_contribuinte()
         elif opcao_menu == '4':
-            print("Obrigado por usar o Sistema de Cadastro de Contribuintes! Até mais.")
-            break # Sai do loop principal e encerra o programa
+            print("Obrigado por usar o sistema! Até logo.")
+            break
         else:
-            print("Opção inválida. Por favor, escolha uma opção de 1 a 4.")
+            print("Opção inválida. Escolha entre 1 e 4.")
 
+# Executar o sistema
 main()
