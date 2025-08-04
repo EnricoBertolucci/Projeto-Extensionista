@@ -8,6 +8,7 @@ lista_contribuintes = []
 
 # Variável global para gerar IDs únicos para os contribuintes
 id_global = 0
+
 def cadastrar_contribuinte():
     global id_global
     id_global += 1
@@ -29,9 +30,9 @@ def cadastrar_contribuinte():
     contribuinte = {
         'id': id_global,
         'nome': nome,
-        'primeira_contribuicao': primeira_contribuicao.strftime("%d/%m/%Y"),  # armazenado como string
+        'primeira_contribuicao': primeira_contribuicao.strftime("%d/%m/%Y"),
         'valor': valor,
-        'bairro': bairro,
+        'bairro': bairro
     }
 
     lista_contribuintes.append(contribuinte)
