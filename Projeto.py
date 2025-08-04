@@ -1,5 +1,5 @@
 # Mensagem de boas-vindas
-print("Bem-vindo ao Sistema de Cadastro de Contribuintes cao!")
+print("Bem-vindo ao Sistema de Cadastro de Contribuintes!")
 
 #Lista que armazenará os contribuintes cadastrados
 lista_contribuintes = []
@@ -113,7 +113,7 @@ def remover_contribuinte():
 def main():
 #Função principal que gerencia o menu de interação com o usuário.
     while True:
-        print("\n--- Menu Principal do Sistema de Cadastro de Cães Comunitários ---")
+        print("\n--- Menu Principal do Sistema de Cadastro de Contribuintes ---")
         print("1. Cadastrar contribuinte")
         print("2. Consultar contribuinte")
         print("3. Remover contribuinte")
