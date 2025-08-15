@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 # Mensagem de boas-vindas
 print("Bem-vindo ao Sistema de Cadastro de Contribuintes!")
@@ -9,13 +9,26 @@ lista_contribuintes = []
 # Variável global para gerar IDs únicos para os contribuintes
 id_global = 0
 
+def calcular_tempo_contribuicao(data_str):
+    """Recebe uma data em string no formato dd/mm/aaaa e retorna (anos, meses)"""
+    data_inicio = datetime.strptime(data_str, "%d/%m/%Y").date()
+    hoje = date.today()
+
+    anos = hoje.year - data_inicio.year
+    meses = hoje.month - data_inicio.month
+
+    if meses < 0:
+        anos -= 1
+        meses += 12
+
+    return anos, meses
+
 def cadastrar_contribuinte():
     global id_global
     id_global += 1
 
     nome = input("Digite o nome do contribuinte: ")
 
-    # Validação da data de contribuição
     while True:
         data_input = input("Digite a data da primeira contribuição (formato DD/MM/AAAA): ")
         try:
@@ -53,10 +66,12 @@ def consultar_contribuinte():
             else:
                 print("\n--- Contribuintes Cadastrados ---")
                 for contribuinte in lista_contribuintes:
+                    anos, meses = calcular_tempo_contribuicao(contribuinte['primeira_contribuicao'])
                     print(f"ID: {contribuinte['id']}")
                     print(f"Nome: {contribuinte['nome']}")
                     print(f"Bairro: {contribuinte['bairro']}")
                     print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                    print(f"Tempo de contribuição: {anos} ano(s) e {meses} mês(es)")
                     print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
 
         elif opcao_consulta == '2':
@@ -65,10 +80,12 @@ def consultar_contribuinte():
                 encontrado = False
                 for contribuinte in lista_contribuintes:
                     if contribuinte['id'] == id_consulta:
+                        anos, meses = calcular_tempo_contribuicao(contribuinte['primeira_contribuicao'])
                         print(f"\n--- Detalhes do Contribuinte (ID: {contribuinte['id']}) ---")
                         print(f"Nome: {contribuinte['nome']}")
                         print(f"Bairro: {contribuinte['bairro']}")
                         print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                        print(f"Tempo de contribuição: {anos} ano(s) e {meses} mês(es)")
                         print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
                         encontrado = True
                         break
@@ -83,10 +100,12 @@ def consultar_contribuinte():
             if encontrados:
                 print(f"\n--- Contribuintes Encontrados com o nome '{nome_busca}' ---")
                 for contribuinte in encontrados:
+                    anos, meses = calcular_tempo_contribuicao(contribuinte['primeira_contribuicao'])
                     print(f"ID: {contribuinte['id']}")
                     print(f"Nome: {contribuinte['nome']}")
                     print(f"Bairro: {contribuinte['bairro']}")
                     print(f"Primeira contribuição: {contribuinte['primeira_contribuicao']}")
+                    print(f"Tempo de contribuição: {anos} ano(s) e {meses} mês(es)")
                     print(f"Valor mensal: R$ {contribuinte['valor']:.2f}\n")
             else:
                 print(f"Nenhum contribuinte com o nome '{nome_busca}' foi encontrado.")
